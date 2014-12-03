@@ -61,6 +61,14 @@ namespace MathDrillsRipper
             }
         }
 
+        public void WriteStart(string format, params object[] values)
+        {
+            lock (_lock)
+            {
+                _messageQueue.Enqueue(new ConsoleMessage { Format = format, Values = values.ToArray(), Colour = ConsoleColor.DarkYellow });
+            }
+        }
+
         public void WriteWarning(string format, params object[] values)
         {
             lock (_lock)

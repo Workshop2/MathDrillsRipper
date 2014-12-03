@@ -17,6 +17,15 @@ namespace MathDrillsRipper
             var queue = new CrawlQueue(console);
             queue.AddUrl("/");
 
+            Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    System.Console.Title = string.Format("Total queued: {0}   Total crawled: {1}", queue.TotalQueued, queue.TotalCrawled);
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                }
+            });
+
             using (var pdfWriter = new FileListWriter(Settings.Default.Pdfs, console))
             {
                 List<Task> tasks = new List<Task>();
@@ -24,15 +33,12 @@ namespace MathDrillsRipper
                 Task anchorParser = Task.Factory.StartNew(() => Run(baseUrl, queue, pdfWriter, console));
                 tasks.Add(anchorParser);
 
-                //if (!Debugger.IsAttached)
-                //{
-                    for (int i = 0; i < 10; i++)
-                    {
-                        Thread.Sleep(TimeSpan.FromSeconds(6)); // ramp up slowly
-                        console.WriteWarning("------------------ Starting up thread no.{0}", (i + 2));
-                        tasks.Add(Task.Factory.StartNew(() => Run(baseUrl, queue, pdfWriter, console)));
-                    }
-                //}
+                for (int i = 0; i < 10; i++)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(6)); // ramp up slowly
+                    console.WriteWarning("------------------ Starting up thread no.{0}", (i + 2));
+                    tasks.Add(Task.Factory.StartNew(() => Run(baseUrl, queue, pdfWriter, console)));
+                }
 
                 Task.WaitAll(tasks.ToArray());
             }
@@ -45,9 +51,10 @@ namespace MathDrillsRipper
         {
             var snatcher = new Snatcher(baseUrl, console);
 
-            Url url;
-            while ((url = queue.GetNext()) != null)
+            string url;
+            while (!string.IsNullOrEmpty(url = queue.GetNext()))
             {
+                console.WriteStart("Starting on {0}", url);
                 Page page = snatcher.GetPage(url);
 
                 if (page != null)

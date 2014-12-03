@@ -15,14 +15,14 @@ namespace MathDrillsRipper
             _client = new RestClient(baseUrl);
         }
 
-        public Page GetPage(Url url)
+        public Page GetPage(string url)
         {
-            var request = new RestRequest(url.OriginalUrl);
+            var request = new RestRequest(url);
             IRestResponse result = _client.Execute(request);
 
             if (result.StatusCode != HttpStatusCode.OK)
             {
-                _console.WriteError("Error while snatching '{0}'", url.OriginalUrl);
+                _console.WriteError("Error while snatching '{0}'", url);
                 _console.WriteError(result.ErrorMessage);
                 return null;
             }

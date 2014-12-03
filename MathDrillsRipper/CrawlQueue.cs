@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MathDrillsRipper
 {
@@ -6,8 +8,10 @@ namespace MathDrillsRipper
     {
         private readonly IConsole _console;
         private readonly object _lock = new object();
-        private readonly Queue<Url> _queuedUrls = new Queue<Url>();
-        private readonly List<Url> _crawledUrls = new List<Url>();
+        private readonly Queue<string> _queuedUrls = new Queue<string>();
+        private readonly List<string> _crawledUrls = new List<string>();
+        public int TotalQueued { get { lock (_lock) { return _queuedUrls.Count; } } }
+        public int TotalCrawled { get { lock (_lock) { return _crawledUrls.Count; } } }
 
         public CrawlQueue(IConsole console)
         {
@@ -21,15 +25,14 @@ namespace MathDrillsRipper
                 _console.WriteError("Error: No url detected to add.");
                 return;
             }
-            
-            var url = new Url { OriginalUrl = originalUrl };
-            if (IsNewUrl(url))
+
+            if (IsNewUrl(originalUrl))
             {
                 _console.WriteInfo("Queuing url: {0}", originalUrl);
 
                 lock (_lock)
                 {
-                    _queuedUrls.Enqueue(url);
+                    _queuedUrls.Enqueue(originalUrl);
                 }
             }
             else
@@ -38,22 +41,39 @@ namespace MathDrillsRipper
             }
         }
 
-        public Url GetNext()
+        public string GetNext()
         {
+            string next = null;
             lock (_lock)
             {
-                Url next = _queuedUrls.Dequeue();
-                _crawledUrls.Add(next);
-                return next;
+                if (_queuedUrls.Any())
+                {
+                    next = _queuedUrls.Dequeue();
+                    _crawledUrls.Add(next);
+                }
             }
+            return next;
         }
 
-        private bool IsNewUrl(Url url)
+        private bool IsNewUrl(string url)
         {
+            //return !(_queuedUrls.Contains(url) && _crawledUrls.Contains(url));
+
+            bool isNew = true;
+
             lock (_lock)
             {
-                return !(_queuedUrls.Contains(url) && _crawledUrls.Contains(url));
+                if (_queuedUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    isNew = false;
+                }
+                else if (_crawledUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    isNew = false;
+                }
             }
+
+            return isNew;
         }
     }
 }

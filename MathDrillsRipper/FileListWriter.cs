@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MathDrillsRipper
@@ -8,6 +10,7 @@ namespace MathDrillsRipper
         private readonly IConsole _console;
         private readonly object _lock = new object();
         private readonly StreamWriter _writer;
+        private readonly HashSet<string> _cached = new HashSet<string>();
 
         public FileListWriter(string fileList, IConsole console)
         {
@@ -29,11 +32,17 @@ namespace MathDrillsRipper
                 entry = baseUrl + entry;
             }
 
-            _console.WriteWarning("---- Found pdf: {0}", entry);
 
             lock (_lock)
             {
+                if (_cached.Contains(entry))
+                {
+                    return;
+                }
+
+                _console.WriteWarning("---- Found pdf: {0}", entry);
                 _writer.WriteLine(entry);
+                _cached.Add(entry);
             }
         }
 
