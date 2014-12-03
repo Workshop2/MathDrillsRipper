@@ -1,2 +1,11 @@
 F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\MathDrillsRipper\bin\Debug\MathDrillsRipper.exe.config
 F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\MathDrillsRipper.exe.config
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\MathDrillsRipper.exe
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\MathDrillsRipper.pdb
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\CsQuery.dll
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\RestSharp.dll
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\CsQuery.xml
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\bin\Debug\RestSharp.xml
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\obj\Debug\MathDrillsRipper.csprojResolveAssemblyReference.cache
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\obj\Debug\MathDrillsRipper.exe
+F:\My Documents\GitHub\MathDrillsRipper\MathDrillsRipper\obj\Debug\MathDrillsRipper.pdb
