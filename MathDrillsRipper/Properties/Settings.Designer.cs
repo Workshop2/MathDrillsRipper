@@ -31,5 +31,14 @@ namespace MathDrillsRipper.Properties {
                 return ((string)(this["TargetUrl"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DetectedPdfs.txt")]
+        public string Pdfs {
+            get {
+                return ((string)(this["Pdfs"]));
+            }
+        }
     }
 }

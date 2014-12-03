@@ -14,25 +14,36 @@ namespace MathDrillsRipper
             _document = document;
         }
 
-        public string[] FindLocalPages()
+        public IEnumerable<string> FindLocalPages(string baseUrl)
         {
-            return FindLocalAnchors().Where(x => !IsPdf(x)).ToArray();
+            return FindLocalAnchors(baseUrl).Where(x => !IsPdf(x));
         }
 
-        public string[] FindPdfs()
-        {
-            return FindLocalAnchors().Where(IsPdf).ToArray();
-        }
-
-        private IEnumerable<string> FindLocalAnchors()
+        public IEnumerable<string> FindPdfs(string baseUrl)
         {
             CQ anchors = _document["a"];
-            IEnumerable<string> localAnchors = anchors
-                                                    .Where(x => x.HasAttribute("href"))
-                                                    .Select(x => x.GetAttribute("href"))
-                                                    .Where(x => x.StartsWith("/"));
+            return anchors
+                .Where(x => x.HasAttribute("href"))
+                .Select(x => x.GetAttribute("href"))
+                .Where(IsPdf);
+        }
 
-            localAnchors = StripHashTags(localAnchors);
+        private IEnumerable<string> FindLocalAnchors(string baseUrl)
+        {
+            CQ anchors = _document["a"];
+            baseUrl = baseUrl.EndsWith("/") ? baseUrl.Substring(0, baseUrl.Length - 1) : baseUrl;
+
+            IEnumerable<string> localAnchors = anchors
+                .Where(x => x.HasAttribute("href"))
+                .Select(x => x.GetAttribute("href"))
+                .Where(x => x.StartsWith("/") || (x.StartsWith(baseUrl, StringComparison.InvariantCultureIgnoreCase) && !x.Equals(baseUrl, StringComparison.InvariantCultureIgnoreCase)))
+                .Select(x => x.StartsWith(baseUrl, StringComparison.InvariantCultureIgnoreCase) ? x.Substring(baseUrl.Length) : x)
+                .Select(x => x.Contains("#") ? x.Substring(0, x.IndexOf("#", StringComparison.Ordinal)) : x)
+                .Select(x => x.StartsWith("/") ? x.Substring(1) : x)
+                .Select(x => x.EndsWith("/") ? x.Substring(0, x.Length - 1) : x)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Distinct();
+
             return localAnchors;
         }
 
@@ -41,11 +52,5 @@ namespace MathDrillsRipper
             return anchor.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private IEnumerable<string> StripHashTags(IEnumerable<string> localAnchors)
-        {
-            return localAnchors
-                        .Select(x => x.Contains("#") ? x.Substring(0, x.IndexOf("#", System.StringComparison.Ordinal)) : x)
-                        .Distinct();
-        }
     }
 }

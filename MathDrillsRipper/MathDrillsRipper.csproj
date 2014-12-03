@@ -48,7 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Console.cs" />
+    <Compile Include="ConsoleMessage.cs" />
     <Compile Include="CrawlQueue.cs" />
+    <Compile Include="FileListWriter.cs" />
     <Compile Include="IConsole.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="Program.cs" />

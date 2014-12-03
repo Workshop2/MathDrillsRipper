@@ -22,7 +22,7 @@ namespace MathDrillsRipper
 
             if (result.StatusCode != HttpStatusCode.OK)
             {
-                _console.WriteError("Error while snatching '{0}'");
+                _console.WriteError("Error while snatching '{0}'", url.OriginalUrl);
                 _console.WriteError(result.ErrorMessage);
                 return null;
             }

@@ -32,6 +32,10 @@ namespace MathDrillsRipper
                     _queuedUrls.Enqueue(url);
                 }
             }
+            else
+            {
+                _console.WriteWarning("Skipping {0}", originalUrl);
+            }
         }
 
         public Url GetNext()
@@ -48,7 +52,7 @@ namespace MathDrillsRipper
         {
             lock (_lock)
             {
-                return !(_queuedUrls.Contains(url) || _crawledUrls.Contains(url));
+                return !(_queuedUrls.Contains(url) && _crawledUrls.Contains(url));
             }
         }
     }

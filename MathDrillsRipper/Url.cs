@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace MathDrillsRipper
 {
+    [DebuggerDisplay("OriginalUrl = {OriginalUrl}")]
     public class Url
     {
         public string OriginalUrl { get; set; }
 
         protected bool Equals(Url other)
         {
-            return OriginalUrl.Equals(other.OriginalUrl, StringComparison.InvariantCultureIgnoreCase);
+            bool equals = OriginalUrl.Equals(other.OriginalUrl, StringComparison.InvariantCultureIgnoreCase);
+            return equals;
         }
 
         public override bool Equals(object obj)
