@@ -9,7 +9,7 @@ namespace MathDrillsRipper
         private readonly IConsole _console;
         private readonly object _lock = new object();
         private readonly Queue<string> _queuedUrls = new Queue<string>();
-        private readonly List<string> _crawledUrls = new List<string>();
+        private readonly HashSet<string> _crawledUrls = new HashSet<string>();
         public int TotalQueued { get { lock (_lock) { return _queuedUrls.Count; } } }
         public int TotalCrawled { get { lock (_lock) { return _crawledUrls.Count; } } }
 
@@ -40,7 +40,6 @@ namespace MathDrillsRipper
                     {
                         _console.WriteWarning("Skipping {0}", url);
                     }
-
                 }
             }
         }
@@ -54,7 +53,7 @@ namespace MathDrillsRipper
                 if (_queuedUrls.Any())
                 {
                     next = _queuedUrls.Dequeue();
-                    _crawledUrls.Add(next);
+                    _crawledUrls.Add(next.ToLowerInvariant());
                 }
             }
             return next;
@@ -67,7 +66,7 @@ namespace MathDrillsRipper
             {
                 isNew = false;
             }
-            else if (_crawledUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
+            else if (_crawledUrls.Contains(url.ToLowerInvariant()))
             {
                 isNew = false;
             }
