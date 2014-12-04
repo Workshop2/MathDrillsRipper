@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using MathDrillsRipper.Properties;
@@ -15,7 +14,7 @@ namespace MathDrillsRipper
 
             var console = new Console();
             var queue = new CrawlQueue(console);
-            queue.AddUrl("/");
+            queue.AddUrl(new[] { "/" });
 
             using (var pdfWriter = new FileListWriter(Settings.Default.Pdfs, console))
             {
@@ -34,7 +33,7 @@ namespace MathDrillsRipper
                 Task anchorParser = Task.Factory.StartNew(() => Run(baseUrl, queue, pdfWriter, console));
                 tasks.Add(anchorParser);
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < Settings.Default.Threads; i++)
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(6)); // ramp up slowly
                     console.WriteWarning("------------------ Starting up thread no.{0}", (i + 2));
@@ -60,15 +59,9 @@ namespace MathDrillsRipper
 
                 if (page != null)
                 {
-                    foreach (string anchor in page.FindLocalPages(baseUrl))
-                    {
-                        queue.AddUrl(anchor);
-                    }
+                    queue.AddUrl(page.FindLocalPages(baseUrl));
 
-                    foreach (string pdf in page.FindPdfs(baseUrl))
-                    {
-                        pdfWriter.WriteEntry(baseUrl, pdf);
-                    }
+                    pdfWriter.WriteEntry(baseUrl, page.FindPdfs(baseUrl));
                 }
             }
         }

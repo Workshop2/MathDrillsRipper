@@ -18,32 +18,37 @@ namespace MathDrillsRipper
             _console = console;
         }
 
-        public void AddUrl(string originalUrl)
+        public void AddUrl(IEnumerable<string> urls)
         {
-            if (string.IsNullOrEmpty(originalUrl))
+            lock (_lock)
             {
-                _console.WriteError("Error: No url detected to add.");
-                return;
-            }
-
-            if (IsNewUrl(originalUrl))
-            {
-                _console.WriteInfo("Queuing url: {0}", originalUrl);
-
-                lock (_lock)
+                foreach (string url in urls)
                 {
-                    _queuedUrls.Enqueue(originalUrl);
+                    if (string.IsNullOrEmpty(url))
+                    {
+                        _console.WriteError("Error: No url detected to add.");
+                        return;
+                    }
+
+                    if (IsNewUrl(url))
+                    {
+                        _console.WriteInfo("Queuing url: {0}", url);
+
+                        _queuedUrls.Enqueue(url);
+                    }
+                    else
+                    {
+                        _console.WriteWarning("Skipping {0}", url);
+                    }
+
                 }
-            }
-            else
-            {
-                _console.WriteWarning("Skipping {0}", originalUrl);
             }
         }
 
         public string GetNext()
         {
             string next = null;
+
             lock (_lock)
             {
                 if (_queuedUrls.Any())
@@ -57,20 +62,14 @@ namespace MathDrillsRipper
 
         private bool IsNewUrl(string url)
         {
-            //return !(_queuedUrls.Contains(url) && _crawledUrls.Contains(url));
-
             bool isNew = true;
-
-            lock (_lock)
+            if (_queuedUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (_queuedUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    isNew = false;
-                }
-                else if (_crawledUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    isNew = false;
-                }
+                isNew = false;
+            }
+            else if (_crawledUrls.Any(x => x.Equals(url, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                isNew = false;
             }
 
             return isNew;

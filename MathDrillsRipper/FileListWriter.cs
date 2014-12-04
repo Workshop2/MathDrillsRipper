@@ -35,25 +35,27 @@ namespace MathDrillsRipper
             _writer = new StreamWriter(fileList) { AutoFlush = true };
         }
 
-        public void WriteEntry(string baseUrl, string path)
+        public void WriteEntry(string baseUrl, IEnumerable<string> paths)
         {
-            string entry = path;
-            if (!path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
-            {
-                entry = baseUrl + entry;
-            }
-
-
             lock (_lock)
             {
-                if (_cached.Contains(entry))
+                foreach (string path in paths)
                 {
-                    return;
-                }
+                    string entry = path;
+                    if (!path.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        entry = baseUrl + entry;
+                    }
+                    
+                    if (_cached.Contains(entry))
+                    {
+                        return;
+                    }
 
-                _console.WriteInfo("---- Found pdf: {0}", entry);
-                _writer.WriteLine(entry);
-                _cached.Add(entry);
+                    _console.WriteInfo("---- Found pdf: {0}", entry);
+                    _writer.WriteLine(entry);
+                    _cached.Add(entry);
+                }
             }
         }
 
