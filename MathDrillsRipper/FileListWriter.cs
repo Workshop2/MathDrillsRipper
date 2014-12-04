@@ -12,6 +12,17 @@ namespace MathDrillsRipper
         private readonly StreamWriter _writer;
         private readonly HashSet<string> _cached = new HashSet<string>();
 
+        public int TotalLinesWritten
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _cached.Count;
+                }
+            }
+        }
+
         public FileListWriter(string fileList, IConsole console)
         {
             _console = console;
@@ -40,7 +51,7 @@ namespace MathDrillsRipper
                     return;
                 }
 
-                _console.WriteWarning("---- Found pdf: {0}", entry);
+                _console.WriteInfo("---- Found pdf: {0}", entry);
                 _writer.WriteLine(entry);
                 _cached.Add(entry);
             }

@@ -17,17 +17,18 @@ namespace MathDrillsRipper
             var queue = new CrawlQueue(console);
             queue.AddUrl("/");
 
-            Task.Factory.StartNew(() =>
-            {
-                while (true)
-                {
-                    System.Console.Title = string.Format("Total queued: {0}   Total crawled: {1}", queue.TotalQueued, queue.TotalCrawled);
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
-                }
-            });
-
             using (var pdfWriter = new FileListWriter(Settings.Default.Pdfs, console))
             {
+
+                Task.Factory.StartNew(() =>
+                {
+                    while (true)
+                    {
+                        System.Console.Title = string.Format("Total queued: {0} | Total crawled: {1} | Total Pdfs Found: {2}", queue.TotalQueued, queue.TotalCrawled, pdfWriter.TotalLinesWritten);
+                        Thread.Sleep(TimeSpan.FromSeconds(1));
+                    }
+                });
+
                 List<Task> tasks = new List<Task>();
 
                 Task anchorParser = Task.Factory.StartNew(() => Run(baseUrl, queue, pdfWriter, console));
